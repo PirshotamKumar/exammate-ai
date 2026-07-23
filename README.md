@@ -6,7 +6,7 @@
 Students often spend hours re-reading notes without active recall. ExamMate AI transforms passive study material into active learning tools, making exam preparation more effective and engaging.
 
 ## Live URL
-[Click here to use the app](https://your-app-name.vercel.app)  <!-- REPLACE THIS WITH YOUR VERcel URL -->
+[Click here to use the app](https://pirshotamexammateai.vercel.app/)  <!-- REPLACE THIS WITH YOUR VERcel URL -->
 
 ## Features
 - 📝 **Paste Study Notes** – Add any text material.
