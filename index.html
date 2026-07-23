@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ExamMate AI — Exam Prep</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root { --primary: #6C3CE1; --primary-light: #8B5CF6; --primary-dark: #5B21B6; --primary-bg: #F5F3FF; --surface: #FFFFFF; --surface-alt: #F9FAFB; --text: #1F2937; --text-secondary: #6B7280; --text-light: #9CA3AF; --border: #E5E7EB; --shadow: 0 4px 24px rgba(108, 60, 225, 0.12); --radius: 16px; --radius-sm: 10px; --font: 'Inter', sans-serif; --max-width: 820px; }
+        body { font-family: var(--font); background: var(--primary-bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; padding: 24px 16px 48px; }
+        .app { max-width: var(--max-width); width: 100%; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 32px 28px 40px; }
+        .app-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 2px solid var(--primary-bg); }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 44px; height: 44px; background: linear-gradient(135deg, var(--primary), var(--primary-light)); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 22px; }
+        .logo h1 { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, var(--primary-dark), var(--primary-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .status-badge { background: #D1FAE5; color: #065F46; font-size: 12px; font-weight: 600; padding: 4px 14px; border-radius: 40px; }
+        .tabs { display: flex; gap: 4px; background: var(--surface-alt); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 28px; flex-wrap: wrap; border: 1px solid var(--border); }
+        .tab-btn { flex: 1; min-width: 70px; padding: 10px 14px; border: none; border-radius: 8px; background: transparent; font-family: var(--font); font-size: 14px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .tab-btn.active { background: var(--surface); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.06); font-weight: 600; }
+        .tab-panel { display: none; animation: fadeIn 0.3s ease; }
+        .tab-panel.active { display: block; }
+        @keyframes fadeIn { 0% { opacity:0; transform: translateY(8px); } 100% { opacity:1; transform: translateY(0); } }
+        .card { background: var(--surface-alt); border-radius: var(--radius-sm); padding: 20px 22px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .card-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .card-title i { color: var(--primary); }
+        textarea { width: 100%; min-height: 140px; padding: 16px 18px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-family: var(--font); font-size: 15px; line-height: 1.7; resize: vertical; transition: border 0.25s ease; background: var(--surface); color: var(--text); }
+        textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(108, 60, 225, 0.10); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; border: none; border-radius: var(--radius-sm); font-family: var(--font); font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.25s ease; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; box-shadow: 0 4px 14px rgba(108, 60, 225, 0.30); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(108, 60, 225, 0.35); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: var(--surface-alt); color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border); }
+        .btn-sm { padding: 6px 16px; font-size: 13px; }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+        .output-box { background: var(--surface); border-radius: var(--radius-sm); padding: 20px; border: 1px solid var(--border); margin-top: 16px; min-height: 60px; white-space: pre-wrap; word-wrap: break-word; font-size: 15px; line-height: 1.7; max-height: 500px; overflow-y: auto; }
+        .output-box.empty { color: var(--text-light); font-style: italic; display: flex; align-items: center; justify-content: center; min-height: 80px; }
+        .quiz-question { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 18px 20px; margin-bottom: 16px; }
+        .quiz-option { display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: background 0.25s ease; margin-bottom: 4px; }
+        .quiz-option:hover { background: var(--primary-bg); }
+        .quiz-option input[type="radio"] { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+        .quiz-option.correct { background: #D1FAE5; border-radius: 8px; }
+        .quiz-option.wrong { background: #FEE2E2; border-radius: 8px; }
+        .flashcard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-top: 16px; }
+        .flashcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 18px; text-align: center; cursor: pointer; transition: all 0.25s ease; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .flashcard:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); border-color: var(--primary-light); }
+        .flashcard .term { font-weight: 700; font-size: 16px; color: var(--primary-dark); }
+        .flashcard .definition { font-size: 14px; color: var(--text-secondary); margin-top: 6px; display: none; }
+        .flashcard.flipped .definition { display: block; }
+        .flashcard.flipped .term { color: var(--text); }
+        .concept-tag { display: inline-block; background: var(--primary-bg); color: var(--primary-dark); padding: 6px 16px; border-radius: 40px; font-size: 14px; font-weight: 500; margin: 4px 4px 4px 0; border: 1px solid rgba(108, 60, 225, 0.15); }
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(108, 60, 225, 0.15); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .progress-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin-top: 12px; }
+        .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; text-align: center; }
+        .stat-card .number { font-size: 32px; font-weight: 700; color: var(--primary); }
+        .text-muted { color: var(--text-secondary); font-size: 14px; }
+        .hidden { display: none !important; }
+        .mt-12 { margin-top: 12px; }
+        .mb-8 { margin-bottom: 8px; }
+        @media (max-width: 600px) { .app { padding: 20px 16px; } .btn-group { flex-direction: column; } .btn { width: 100%; justify-content: center; } }
+    </style>
+</head>
+<body>
+<div class="app" id="app">
+    <header class="app-header">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+            <div><h1>ExamMate AI</h1><span style="font-size:14px;font-weight:400;color:var(--text-secondary);">Your exam prep assistant</span></div>
+        </div>
+        <div class="status-badge"><i class="fas fa-circle" style="font-size:8px;color:#10B981;"></i> Ready</div>
+    </header>
+    <nav class="tabs" role="tablist">
+        <button class="tab-btn active" data-tab="notes"><i class="fas fa-pen-fancy"></i> Notes</button>
+        <button class="tab-btn" data-tab="quiz"><i class="fas fa-question-circle"></i> Quiz</button>
+        <button class="tab-btn" data-tab="flashcards"><i class="fas fa-layer-group"></i> Flashcards</button>
+        <button class="tab-btn" data-tab="concepts"><i class="fas fa-lightbulb"></i> Concepts</button>
+        <button class="tab-btn" data-tab="progress"><i class="fas fa-chart-simple"></i> Progress</button>
+    </nav>
+    <section class="tab-panel active" id="panel-notes">
+        <div class="card">
+            <div class="card-title"><i class="fas fa-file-lines"></i> Study Material</div>
+            <textarea id="studyInput" placeholder="Paste your lecture notes, textbook chapters, or any study content here..."></textarea>
+            <div class="btn-group">
+                <button class="btn btn-primary" id="btnGenerateQuiz"><i class="fas fa-puzzle-piece"></i> Generate Quiz</button>
+                <button class="btn btn-primary" id="btnGenerateFlashcards"><i class="fas fa-cards"></i> Flashcards</button>
+                <button class="btn btn-primary" id="btnGenerateConcepts"><i class="fas fa-list-check"></i> Concepts</button>
+                <button class="btn btn-secondary" id="btnSampleNotes"><i class="fas fa-upload"></i> Load Sample</button>
+                <button class="btn btn-secondary" id="btnClearNotes"><i class="fas fa-eraser"></i> Clear</button>
+            </div>
+        </div>
+        <div id="notesOutput" class="output-box empty">Your generated content will appear here.</div>
+    </section>
+    <section class="tab-panel" id="panel-quiz"><div class="card"><div class="card-title"><i class="fas fa-puzzle-piece"></i> Practice Quiz</div><div id="quizContainer"><div class="output-box empty">No quiz generated yet. Go to Notes tab.</div></div><div id="quizResult" class="hidden"></div><div class="btn-group mt-12"><button class="btn btn-secondary btn-sm" id="btnCheckQuiz"><i class="fas fa-check-circle"></i> Check Answers</button><button class="btn btn-secondary btn-sm" id="btnResetQuiz"><i class="fas fa-rotate"></i> Reset Quiz</button></div></div></section>
+    <section class="tab-panel" id="panel-flashcards"><div class="card"><div class="card-title"><i class="fas fa-layer-group"></i> Flashcards</div><div id="flashcardContainer"><div class="output-box empty">No flashcards yet. Go to Notes tab.</div></div></div></section>
+    <section class="tab-panel" id="panel-concepts"><div class="card"><div class="card-title"><i class="fas fa-lightbulb"></i> Key Concepts</div><div id="conceptsContainer"><div class="output-box empty">No concepts extracted yet. Go to Notes tab.</div></div></div></section>
+    <section class="tab-panel" id="panel-progress"><div class="card"><div class="card-title"><i class="fas fa-chart-simple"></i> Progress</div><div class="progress-stats" id="progressStats"><div class="stat-card"><div class="number" id="statQuizzes">0</div><div class="label">Quizzes</div></div><div class="stat-card"><div class="number" id="statFlashcards">0</div><div class="label">Flashcards</div></div><div class="stat-card"><div class="number" id="statConcepts">0</div><div class="label">Concepts</div></div><div class="stat-card"><div class="number" id="statSessions">0</div><div class="label">Sessions</div></div></div><button class="btn btn-secondary btn-sm mt-12" id="btnResetProgress"><i class="fas fa-trash-can"></i> Reset Progress</button></div></section>
+    <footer style="margin-top:36px;padding-top:20px;border-top:1px solid var(--border);text-align:center;font-size:13px;color:var(--text-light);"><i class="fas fa-robot"></i> Powered by AI</footer>
+</div>
+<script>
+    // ---------- STATE ----------
+    const state = { notes: '', quiz: null, flashcards: null, concepts: null, progress: { quizzes:0, flashcards:0, concepts:0, sessions:0 } };
+    const $ = id => document.getElementById(id);
+    const studyInput = $('studyInput'), notesOutput = $('notesOutput'), quizContainer = $('quizContainer'), quizResult = $('quizResult'), flashcardContainer = $('flashcardContainer'), conceptsContainer = $('conceptsContainer');
+    const statQuizzes = $('statQuizzes'), statFlashcards = $('statFlashcards'), statConcepts = $('statConcepts'), statSessions = $('statSessions');
+    const btnGenQ = $('btnGenerateQuiz'), btnGenF = $('btnGenerateFlashcards'), btnGenC = $('btnGenerateConcepts'), btnClear = $('btnClearNotes'), btnSample = $('btnSampleNotes'), btnCheck = $('btnCheckQuiz'), btnResetQ = $('btnResetQuiz'), btnResetP = $('btnResetProgress');
+
+    // ---------- TABS ----------
+    document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); this.classList.add('active');
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        document.getElementById('panel-'+this.dataset.tab).classList.add('active');
+        localStorage.setItem('examMate_tab', this.dataset.tab);
+    }));
+    if(localStorage.getItem('examMate_tab')) document.querySelector(`.tab-btn[data-tab="${localStorage.getItem('examMate_tab')}"]`)?.click();
+
+    // ---------- SAVE/LOAD ----------
+    function saveState() { try { localStorage.setItem('examMate_state', JSON.stringify({ notes: studyInput.value, quiz: state.quiz, flashcards: state.flashcards, concepts: state.concepts, progress: state.progress })); } catch(e){} }
+    function loadState() {
+        try { const d=JSON.parse(localStorage.getItem('examMate_state')); if(d){ if(d.notes) studyInput.value=d.notes; if(d.quiz) state.quiz=d.quiz; if(d.flashcards) state.flashcards=d.flashcards; if(d.concepts) state.concepts=d.concepts; if(d.progress) Object.assign(state.progress, d.progress); renderAll(); } } catch(e){}
+    }
+    studyInput.addEventListener('input', ()=>{ saveState(); updateNotesPreview(); });
+    function updateNotesPreview() {
+        if(studyInput.value.trim()) { notesOutput.classList.remove('empty'); notesOutput.innerHTML = `<span class="text-muted"><i class="fas fa-check-circle" style="color:#10B981;"></i> ${studyInput.value.length} characters loaded. Ready to generate!</span>`; }
+        else { notesOutput.classList.add('empty'); notesOutput.innerHTML = 'Your generated content will appear here.'; }
+    }
+
+    // ---------- RENDER ----------
+    function renderAll() { renderQuiz(); renderFlashcards(); renderConcepts(); renderProgress(); updateNotesPreview(); }
+    function renderQuiz() {
+        const q = state.quiz;
+        if(!q || !q.questions || q.questions.length===0) { quizContainer.innerHTML=`<div class="output-box empty">No quiz generated yet.</div>`; quizResult.classList.add('hidden'); return; }
+        let html = '';
+        q.questions.forEach((item, idx) => {
+            html += `<div class="quiz-question" data-q="${idx}"><div class="q-text">${idx+1}. ${item.question}</div>`;
+            item.options.forEach((opt, oi) => {
+                const checked = item._selected === oi ? 'checked' : '';
+                const cls = item._revealed ? (oi === item.correct ? 'correct' : (item._selected === oi && oi !== item.correct ? 'wrong' : '')) : '';
+                html += `<div class="quiz-option ${cls}"><input type="radio" name="q${idx}" value="${oi}" ${checked} data-q="${idx}" data-opt="${oi}"><label>${String.fromCharCode(65+oi)}. ${opt}</label></div>`;
+            });
+            if(item._revealed && item.explanation) html += `<div style="margin-top:10px;padding:10px 14px;background:#F3F4F6;border-radius:8px;font-size:14px;"><strong>💡 Explanation:</strong> ${item.explanation}</div>`;
+            html += `</div>`;
+        });
+        quizContainer.innerHTML = html;
+        quizContainer.querySelectorAll('input[type="radio"]').forEach(r => r.addEventListener('change', function(e) {
+            const qIdx = parseInt(this.dataset.q), optIdx = parseInt(this.dataset.opt);
+            if(state.quiz?.questions[qIdx]) { state.quiz.questions[qIdx]._selected = optIdx; saveState(); }
+        }));
+        const allRevealed = q.questions.every(item => item._revealed === true);
+        if(allRevealed) showQuizResult(); else quizResult.classList.add('hidden');
+    }
+    function showQuizResult() {
+        const q=state.quiz; if(!q) return;
+        let correct=0; q.questions.forEach(item => { if(item._selected === item.correct) correct++; });
+        const pct = Math.round((correct/q.questions.length)*100);
+        const pass = pct >= 60;
+        quizResult.classList.remove('hidden');
+        quizResult.className = `quiz-result ${pass ? 'pass' : 'fail'}`;
+        quizResult.innerHTML = `<strong>${correct}/${q.questions.length}</strong> correct (${pct}%) — ${pass ? '🎉 Great job!' : '📚 Keep reviewing.'}`;
+        if(!q._counted) { q._counted=true; state.progress.quizzes=(state.progress.quizzes||0)+1; state.progress.sessions=(state.progress.sessions||0)+1; saveState(); renderProgress(); }
+    }
+    function renderFlashcards() {
+        const f=state.flashcards;
+        if(!f || f.length===0) { flashcardContainer.innerHTML=`<div class="output-box empty">No flashcards yet.</div>`; return; }
+        let html='<div class="flashcard-grid">';
+        f.forEach(card => { html += `<div class="flashcard" onclick="this.classList.toggle('flipped')"><div class="term">${card.term}</div><div class="definition">${card.definition}</div><div class="hint">👆 tap</div></div>`; });
+        html+='</div>';
+        flashcardContainer.innerHTML = html;
+        if(f.length>0 && !f._counted) { f._counted=true; state.progress.flashcards=(state.progress.flashcards||0)+f.length; state.progress.sessions=(state.progress.sessions||0)+1; saveState(); renderProgress(); }
+    }
+    function renderConcepts() {
+        const c=state.concepts;
+        if(!c || c.length===0) { conceptsContainer.innerHTML=`<div class="output-box empty">No concepts extracted yet.</div>`; return; }
+        let html='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">';
+        c.forEach(item => { html += `<span class="concept-tag"><strong>${item.concept}</strong> — ${item.definition}</span>`; });
+        html+='</div>';
+        conceptsContainer.innerHTML = html;
+        if(c.length>0 && !c._counted) { c._counted=true; state.progress.concepts=(state.progress.concepts||0)+c.length; state.progress.sessions=(state.progress.sessions||0)+1; saveState(); renderProgress(); }
+    }
+    function renderProgress() {
+        const p=state.progress;
+        statQuizzes.textContent=p.quizzes||0; statFlashcards.textContent=p.flashcards||0; statConcepts.textContent=p.concepts||0; statSessions.textContent=p.sessions||0;
+    }
+
+    // ---------- API CALL (Connects to DeepSeek via /api/generate) ----------
+    async function callAI(prompt, systemPrompt) {
+        try {
+            const res = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, systemPrompt })
+            });
+            if(!res.ok) throw new Error('API error');
+            const data = await res.json();
+            return data.result;
+        } catch(e) {
+            console.warn('API fallback used', e);
+            // FALLBACK: Simulated AI (so app works even if key is missing)
+            return simulateAI(prompt);
+        }
+    }
+
+    // This is a safe fallback so the app doesn't crash without a key
+    function simulateAI(prompt) {
+        const lower = prompt.toLowerCase();
+        if(lower.includes('quiz')) {
+            const qs = [];
+            for(let i=0;i<4;i++) {
+                qs.push({
+                    question: `Sample Question ${i+1}: What is the main idea of the provided text?`,
+                    options: ['Option A: Core concept', 'Option B: Minor detail', 'Option C: Historical context', 'Option D: Application'],
+                    correct: 0,
+                    explanation: 'The main idea is always the core concept.'
+                });
+            }
+            return JSON.stringify({ type: 'quiz', questions: qs });
+        } else if(lower.includes('flashcard')) {
+            const cards = [{ term: 'Sample Term 1', definition: 'Definition of term 1' }, { term: 'Sample Term 2', definition: 'Definition of term 2' }];
+            return JSON.stringify({ type: 'flashcards', flashcards: cards });
+        } else if(lower.includes('concept')) {
+            const concepts = [{ concept: 'Key Concept 1', definition: 'Definition of key concept 1' }];
+            return JSON.stringify({ type: 'concepts', concepts });
+        }
+        return JSON.stringify({ type: 'summary', summary: 'AI summary of your notes.' });
+    }
+
+    // ---------- GENERATORS ----------
+    function getNotes() { const t=studyInput.value.trim(); if(!t) { alert('Please paste notes first!'); return null; } return t; }
+    function setLoading(btn, loading) {
+        if(!btn) return;
+        if(loading) { btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Generating…'; }
+        else { btn.disabled=false; const label=btn.dataset.label||btn.textContent.trim(); btn.innerHTML=btn.dataset.icon?`<i class="${btn.dataset.icon}"></i> ${label}`:label; }
+    }
+    async function generate(type) {
+        const text=getNotes(); if(!text) return;
+        let btn, sysPrompt;
+        if(type==='quiz') { btn=btnGenQ; sysPrompt='Generate 5 multiple choice questions based on the notes. Return valid JSON with a "questions" array. Each question object must have: question (string), options (array of 4 strings), correct (number 0-3), explanation (string).'; }
+        else if(type==='flashcards') { btn=btnGenF; sysPrompt='Generate 8 flashcards from the notes. Return valid JSON with a "flashcards" array. Each card must have: term (string), definition (string).'; }
+        else if(type==='concepts') { btn=btnGenC; sysPrompt='Extract 6 key concepts from the notes. Return valid JSON with a "concepts" array. Each concept must have: concept (string), definition (string).'; }
+        setLoading(btn, true);
+        try {
+            const result = await callAI(text, sysPrompt);
+            let parsed; try { parsed=JSON.parse(result); } catch(e) { const m=result.match(/\{[\s\S]*\}/); if(m) parsed=JSON.parse(m[0]); else throw new Error('Parse error'); }
+            if(type==='quiz' && parsed.questions) { state.quiz={ questions: parsed.questions.map(q=>({...q, _selected:null, _revealed:false})), _counted:false }; saveState(); renderQuiz(); document.querySelector('.tab-btn[data-tab="quiz"]')?.click(); }
+            else if(type==='flashcards' && parsed.flashcards) { state.flashcards=parsed.flashcards; state.flashcards._counted=false; saveState(); renderFlashcards(); document.querySelector('.tab-btn[data-tab="flashcards"]')?.click(); }
+            else if(type==='concepts' && parsed.concepts) { state.concepts=parsed.concepts; state.concepts._counted=false; saveState(); renderConcepts(); document.querySelector('.tab-btn[data-tab="concepts"]')?.click(); }
+            else throw new Error('Invalid response');
+        } catch(err) { alert('Generation failed: '+err.message); }
+        setLoading(btn, false);
+    }
+
+    // ---------- EVENTS ----------
+    btnGenQ.addEventListener('click', ()=>generate('quiz'));
+    btnGenF.addEventListener('click', ()=>generate('flashcards'));
+    btnGenC.addEventListener('click', ()=>generate('concepts'));
+    btnClear.addEventListener('click', ()=>{ studyInput.value=''; state.quiz=null; state.flashcards=null; state.concepts=null; localStorage.removeItem('examMate_state'); renderAll(); });
+    btnSample.addEventListener('click', ()=>{ studyInput.value='The French Revolution (1789–1799) was a period of radical political and societal change in France. It began with the Estates General of 1789 and ended with the coup of 18 Brumaire in 1799. Key causes included economic hardship, social inequality, and Enlightenment ideals. Major events include the Storming of the Bastille, the Reign of Terror, and the rise of Napoleon Bonaparte.'; studyInput.dispatchEvent(new Event('input')); saveState(); });
+    btnCheck.addEventListener('click', ()=>{ if(!state.quiz) return alert('No quiz'); state.quiz.questions.forEach(q=>q._revealed=true); saveState(); renderQuiz(); });
+    btnResetQ.addEventListener('click', ()=>{ if(!state.quiz) return; state.quiz.questions.forEach(q=>{q._selected=null; q._revealed=false;}); state.quiz._counted=false; saveState(); renderQuiz(); quizResult.classList.add('hidden'); });
+    btnResetP.addEventListener('click', ()=>{ if(confirm('Reset progress?')){ state.progress={quizzes:0,flashcards:0,concepts:0,sessions:0}; if(state.quiz) state.quiz._counted=false; if(state.flashcards) state.flashcards._counted=false; if(state.concepts) state.concepts._counted=false; saveState(); renderProgress(); } });
+
+    // Store button labels
+    [btnGenQ, btnGenF, btnGenC].forEach(b=>{ b.dataset.label=b.textContent.trim(); const m=b.innerHTML.match(/<i class="([^"]+)"><\/i>/); if(m) b.dataset.icon=m[1]; });
+    loadState();
+    if(!studyInput.value.trim()) { notesOutput.classList.add('empty'); notesOutput.innerHTML='Paste notes and click a button to start!'; }
+</script>
+</body>
+</html>
