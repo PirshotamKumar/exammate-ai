@@ -1,6 +1,5 @@
 // api/generate.js
 export default async function handler(req, res) {
-  // 1. Accept only POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -10,26 +9,22 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing prompt' });
   }
 
-  // 2. Read the OpenRouter API key from environment variables
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: 'Missing OpenRouter API key' });
   }
 
   try {
-    // 3. Call the OpenRouter API
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        // Optional but recommended: Identify your app to OpenRouter
-        'HTTP-Referer': process.env.VERCEL_URL || 'http://localhost:3000',
+        'HTTP-Referer': process.env.VERCEL_URL || 'https://your-site.vercel.app',
         'X-Title': 'ExamMate AI',
       },
       body: JSON.stringify({
-        // 4. Choose a free model. Change this to any other model you like.
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'openai/gpt-4o-mini',  // Reliable free model
         messages: [
           { role: 'system', content: systemPrompt || 'You are a helpful exam assistant.' },
           { role: 'user', content: prompt },
