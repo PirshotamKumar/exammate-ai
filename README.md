@@ -26,11 +26,7 @@ The app uses **DeepSeek API** (`deepseek-chat` model) to generate educational co
 - **Backend:** Vercel Serverless Functions (Node.js)
 - **AI Model:** DeepSeek (`deepseek-chat`)
 - **Hosting:** Vercel
-
-## Screenshots
-![Screenshot 1](screenshot1.png) <!-- Add your screenshots -->
-![Screenshot 2](screenshot2.png)
-![Screenshot 3](screenshot3.png)
+- **API Key:** OpenRouter
 
 ## How to Run Locally
 1. Clone the repository: `git clone https://github.com/yourusername/exammate-ai.git`
